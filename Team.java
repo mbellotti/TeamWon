@@ -53,30 +53,45 @@ class Defender extends Player {
     public int getNumber() { return numbers[index]; }
     public String getName() { return names[index]; }
     public boolean isLeftHanded() { return false; }
-    public void step() {
+	public void step() {
 		if (hasPuck()) // If we have the puck.
-		    skate(2600, 0, 1000); // Skate towards the goal.
-		else if (Util.dist(getX() - getPuck().getX(), // If the puck is within 5m. 
-				   getY() - getPuck().getY()) < 500)
-		    skate(getPuck(), 1000); // Get puck                  
-		else {
-		    IPlayer best = null;
-		    for (int i = 0; i < 12; ++i) { // Loop through all players.
-			IPlayer cur = getPlayer(i);
+			skate(2600, 0, 1000); // Skate towards the goal.
+		else if (Util.dist(getX() - getPuck().getX(), // If the puck is within
+														// 5m.
+				getY() - getPuck().getY()) < 500) {
+			
+			// Prevent offsides
+			if (getX() < 2000) {
 
-			if (cur.isOpponent() && // If player is opponent...
-			    (best == null || 
-			     Util.dist(getX() - cur.getX(), // ...and closest so far...
-				       getY() - cur.getY()) <
-			     Util.dist(getX() - best.getX(),
-				       getY() - best.getY())))
-			    best = cur; // ...save player.
-		    }
+				IPlayer goalie = null;
 
-		    skate(best, 1000); // Tackle closest opponent.
+				for (int i = 0; i < 12; ++i) {
+					IPlayer cur = getPlayer(i);
+
+					if (cur.isOpponent() && cur instanceof IGoalKeeper) {
+						goalie = cur; 
+					}
+				}
+
+				//always try to move toward the goalie
+				turn(goalie, 1000);
+				skate(getPuck(), 1000);
+			}
+		} else {
+			IPlayer best = null;
+			for (int i = 0; i < 12; ++i) { 
+				IPlayer cur = getPlayer(i);
+
+				if (cur.isOpponent() && 
+						(best == null || Util.dist(getX() - cur.getX(), 
+								getY() - cur.getY()) < Util.dist(
+								getX() - best.getX(), getY() - best.getY())))
+					best = cur; 
+			}
+
+			skate(best, 1000); 
 		}
-	    }
-	
+	}	
 }
 
 
