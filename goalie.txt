@@ -1,0 +1,8 @@
+class WonGoalie extends GoalKeeper {
+    public int getNumber() { return 1; }
+    public String getName() { return "Sieve Fivehole"; }
+    public boolean isLeftHanded() { return true; }
+    public void step() {
+	skate(-2550, 0, 200); // Stand in the middle of the goal.
+	turn(getPuck(), MAX_TURN_SPEED); // Turn towards puck.
+    }
